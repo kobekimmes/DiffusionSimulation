@@ -1,7 +1,7 @@
 
 int screenSize = 800;
 
-int res = 10;
+int res = 5;
 int rows = screenSize / res;
 int cols = screenSize / res;
 
@@ -16,9 +16,14 @@ void settings() {
 
 void setup() {
   f.initField();
+  f.seed(false);
 }
 
 void draw() {
-  background(255);
-  f.drawField();
+  frameRate(60);
+  f.addChem();
+  f.evalField();
+  f.updateField();
+  //f.drawField();
+  
 }
