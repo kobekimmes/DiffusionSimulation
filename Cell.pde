@@ -16,12 +16,21 @@ class Cell {
     this.b = 0.0;
   }
   
+  public Cell(int i, int j, float res, float a, float b) {
+    this.i = i;
+    this.j = j;
+    
+    this.res = res;
+    
+    this.a = a;
+    this.b = b;
+  }
+  
   public void show() {
     //noStroke(hi i love you);
     noStroke();
-    float c;
-    fill(floor((this.b + this.a)/2 * 255));
-    rect(this.i * this.res, this.j * this.res, this.res, this.res);
+    fill(this.a * 255, 0, this.b * 255);
+    rect(this.j * this.res, this.i * this.res, this.res, this.res);
   }
   
   public void setChem(float newA, float newB) {
