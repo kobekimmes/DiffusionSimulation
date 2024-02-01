@@ -16,9 +16,9 @@ class Field {
     this.field = new Cell[rows][cols];
     this.newField = new Cell[rows][cols];
 
-    this.f = 0.055;
-    this.k = 0.062;
-    this.dA = 1.0;
+    this.f = 0.05;
+    this.k = 0.032;
+    this.dA = 1;
     this.dB = 0.5;
   }
 
@@ -40,14 +40,11 @@ class Field {
         Cell c = this.field[i][j];
         float a = c.a;
         float b = c.b;
-        //println("old: ", a,b);
 
-        //float newA = a + (this.dA * this.laplace(c, true));
-        //float newB = b + (this.dB * this.laplace(c, false));
-        float newA = a + ((this.dA * this.laplace(c, true)) - (a * (b * b)) + (this.f * (1 - a)));
-        float newB = b + ((this.dB * this.laplace(c, false)) + (a * (b * b)) - ((this.k + this.f) * b));
 
-        //println("new: ", newA, newB);
+        float newA = a + (this.dA * this.laplace(c, true) - (a * b * b) + (this.f * (1 - a)));
+        float newB = b + (this.dB * this.laplace(c, false) + (a * b * b) - (this.k + this.f) * b);
+
 
         this.newField[i][j].a = newA;
         this.newField[i][j].b = newB;
@@ -76,52 +73,75 @@ class Field {
     this.field = this.newField;
     this.newField = temp;
   }
-  
+
   public int wrap(int x, int limit) {
     return (x + limit) % limit;
   }
 
-  public float laplace(Cell cell, boolean a) {
-    int[] xDir = new int[]{-1, 0, 1, -1, 1, -1, 0, 1, 0};
-    int[] yDir = new int[]{-1, -1, -1, 0, 0, 1, 1, 1, 0};
+  public float laplace(Cell c, boolean a) {
+    //  int[] xDir = new int[]{-1, 0, 1, -1, 1, -1, 0, 1, 0};
+    //  int[] yDir = new int[]{-1, -1, -1, 0, 0, 1, 1, 1, 0};
 
-    int i = cell.i;
-    int j = cell.j;
+    //  int i = cell.i;
+    //  int j = cell.j;
 
-    int sum = 0;
+    //  int sum = 0;
 
-    for (int k = 0; k < 9; k++) {
-      int x = wrap(i + xDir[k], rows);
-      int y = wrap(j + yDir[k], cols);
-      if (a) {
-        if ((xDir[k] == 0) ^ (yDir[k] == 0)) {
-          //println(k, "axial", xDir[k], yDir[k]);
-          sum += (this.field[x][y].a) * 0.9;
-        
-        } else if ((xDir[k] != 0) && (yDir[k] != 0)) {
-          //println(k, "diag", xDir[k], yDir[k]);
-          sum += (this.field[x][y].a) * 0.05;
-          
-        } else {
-          //println(k, "self", xDir[k], yDir[k]);
-          sum -= (this.field[x][y].a);
-          
-        }
-      } 
-      else {
-        if ((xDir[k] == 0) ^ (yDir[k] == 0)) {
-          sum += (this.field[x][y].b) * 0.1;
-          
-        } else if ((xDir[k] != 0) && (yDir[k] != 0)) {
-          sum += (this.field[x][y].b) * 0.05;
-          
-        } else {
-          sum -= this.field[x][y].b;
-        }
-      }
+    //  for (int k = 0; k < 9; k++) {
+    //    int x = wrap(i + xDir[k], rows);
+    //    int y = wrap(j + yDir[k], cols);
+    //    if (a) {
+    //      if ((xDir[k] == 0) ^ (yDir[k] == 0)) {
+    //        sum += (this.field[x][y].a) * 0.2;
+
+    //      } else if ((xDir[k] != 0) && (yDir[k] != 0)) {
+    //        sum += (this.field[x][y].a) * 0.05;
+
+    //      } else {
+    //        sum -= (this.field[x][y].a);
+
+    //      }
+    //    }
+    //    else {
+    //      if ((xDir[k] == 0) ^ (yDir[k] == 0)) {
+    //        sum += (this.field[x][y].b) * 0.2;
+
+    //      } else if ((xDir[k] != 0) && (yDir[k] != 0)) {
+    //        sum += (this.field[x][y].b) * 0.05;
+
+    //      } else {
+    //        sum -= this.field[x][y].b;
+    //      }
+    //    }
+    //  }
+
+    //  return sum;
+    //}
+    int i = c.i;
+    int j = c.j;
+    float laplace = 0;
+    if (a) {
+      laplace += c.a*-1;
+      laplace += this.field[wrap(i+1, rows)][j].a*0.2;
+      laplace += this.field[wrap(i-1, rows)][j].a*0.2;
+      laplace += this.field[i][wrap(j+1, cols)].a*0.2;
+      laplace += this.field[i][wrap(j-1, cols)].a*0.2;
+      laplace += this.field[wrap(i-1,rows)][wrap(j-1, cols)].a*0.05;
+      laplace += this.field[wrap(i+1,rows)][wrap(j-1,cols)].a*0.05;
+      laplace += this.field[wrap(i-1,rows)][wrap(j+1, cols)].a*0.05;
+      laplace += this.field[wrap(i+1,rows)][wrap(j+1,cols)].a*0.05;
+    } else {
+      laplace += c.b*-1;
+      laplace += this.field[wrap(i+1, rows)][j].b*0.2;
+      laplace += this.field[wrap(i-1, rows)][j].b*0.2;
+      laplace += this.field[i][wrap(j+1, cols)].b*0.2;
+      laplace += this.field[i][wrap(j-1, cols)].b*0.2;
+      laplace += this.field[wrap(i-1,rows)][wrap(j-1, cols)].b*0.05;
+      laplace += this.field[wrap(i+1,rows)][wrap(j-1,cols)].b*0.05;
+      laplace += this.field[wrap(i-1,rows)][wrap(j+1, cols)].b*0.05;
+      laplace += this.field[wrap(i+1,rows)][wrap(j+1,cols)].b*0.05;
     }
-
-    return sum;
+    return laplace;
   }
 
 
@@ -131,19 +151,19 @@ class Field {
 
     if (mousePressed) {
       println(x, y);
-      this.newField[y][x].b += 0.5;
+      this.newField[y][x].b += 1;
       this.newField[y][x].a = 0.0;
     }
   }
 
   public void seed(boolean random) {
     if (random) {
-      int rX = (int) random(this.rows);
-      int rY = (int) random(this.cols);
-
-      this.field[rX][rY].b = 1;
-      this.field[rX][rY].a = 0;
-      //this.newField[rX][rY].b = 1;
+      for (int i = 0; i < 20; i++) {
+        int rX = (int) random(this.rows);
+        int rY = (int) random(this.cols);
+        this.field[rX][rY].b = 1;
+        //this.field[rX][rY].a = 0;
+      }
     } else {
       int squareSize = 5;
       for (int i = (rows/2)-squareSize; i < (rows/2)+squareSize; i++) {

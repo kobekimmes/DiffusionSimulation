@@ -29,7 +29,7 @@ class Cell {
   public void show() {
     //noStroke(hi i love you);
     noStroke();
-    fill(this.a * 255, 0, this.b * 255);
+    fill(this.a * 255, this.b * 255, 0);
     rect(this.j * this.res, this.i * this.res, this.res, this.res);
   }
   

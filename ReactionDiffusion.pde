@@ -1,7 +1,7 @@
 
 int screenSize = 1000;
 
-int res = 20;
+int res = 10;
 
 int rows = screenSize / res;
 int cols = screenSize / res;
@@ -15,7 +15,7 @@ Field f = new Field(rows, cols, res);
 
 void setup() {
   f.initField();
-  f.seed(false);
+  f.seed(true);
 }
 
 void draw() {
